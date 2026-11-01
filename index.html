@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ms"><head><meta charset="utf-8"><title>Super Muzium Bros: Misi Pulau Pinang</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--sky:#4aa8f0;--ink:#fff;--gold:#ffd23f;--red:#e8382b;--card:#1b2a5a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Courier New",monospace;background:#0b1030;color:var(--ink);overflow-x:hidden}
+#game{max-width:900px;margin:0 auto;min-height:100vh;position:relative;background:linear-gradient(#3b97e6,#8ccaf7 70%);overflow:hidden;transition:background .6s}
+#game.cave{background:linear-gradient(#10182e,#2a1a2a 80%)}
+#game.lava{background:linear-gradient(#1a0d0d,#5a1a0a 90%)}
+.cloud{position:absolute;font-size:60px;opacity:.9;animation:drift linear infinite;pointer-events:none}
+@keyframes drift{from{transform:translateX(-120px)}to{transform:translateX(1000px)}}
+#hud{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:center;background:#2c4a9a;border-bottom:4px solid #12285e;padding:10px;font-weight:bold;font-size:14px;position:relative;z-index:3}
+.coin{display:inline-block;animation:spin 1.2s linear infinite}
+@keyframes spin{50%{transform:scaleX(.1)}}
+.screen{position:relative;z-index:2;padding:24px 16px 120px;text-align:center;animation:fade .5s}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}}
+h1{font-size:clamp(30px,8vw,64px);margin:8px 0;color:var(--red);text-shadow:3px 3px 0 var(--gold),6px 6px 0 #7a1a10;letter-spacing:2px;animation:bob 2s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+h2{color:var(--gold);text-shadow:2px 2px #000;font-size:clamp(20px,5vw,32px)}
+.sub{background:var(--gold);color:#6a1a00;display:inline-block;padding:4px 16px;border-radius:8px;font-weight:bold;font-size:clamp(16px,4vw,26px)}
+.btn{font:inherit;font-weight:bold;font-size:20px;background:var(--gold);color:#5a2a00;border:4px solid #8a5a00;border-radius:10px;padding:12px 28px;cursor:pointer;box-shadow:0 6px 0 #8a5a00;margin-top:20px;animation:blink 1s steps(2) infinite}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #8a5a00}
+@keyframes blink{50%{filter:brightness(1.25)}}
+.museum{font-size:110px;animation:bob 3s ease-in-out infinite}
+.q{font-size:clamp(20px,4.5vw,30px);font-weight:bold;margin:16px 0 22px;text-shadow:2px 2px #0006;min-height:70px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:760px;margin:0 auto}
+@media(max-width:560px){.opts{grid-template-columns:1fr}}
+.opt{font:inherit;font-weight:bold;font-size:17px;text-align:left;display:flex;gap:10px;align-items:center;background:#fff;color:#111;border:4px solid #111;border-radius:10px;padding:12px;cursor:pointer;transition:transform .15s;animation:pop .5s backwards}
+.opt:nth-child(2){animation-delay:.1s}.opt:nth-child(3){animation-delay:.2s}.opt:nth-child(4){animation-delay:.3s}
+@keyframes pop{from{transform:scale(0) rotate(-8deg)}}
+.opt .blk{flex:none;width:44px;height:44px;background:#f5b800;border:3px solid #7a4a00;border-radius:6px;display:grid;place-items:center;font-size:22px}
+.opt:hover:not(:disabled){transform:translateY(-8px) scale(1.03)}
+.opt.ok{background:#7ee36a;border-color:#1c7a10;animation:hop .6s}
+.opt.no{background:#ff8a80;border-color:#a01010;animation:shake .5s}
+.opt:disabled{cursor:default}
+@keyframes hop{30%{transform:translateY(-30px)}60%{transform:translateY(0)}80%{transform:translateY(-10px)}}
+@keyframes shake{25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+.dark .q,.dark{color:#fff}
+#ground{position:absolute;left:0;right:0;bottom:0;height:56px;background:repeating-linear-gradient(90deg,#b5541c 0 40px,#8a3a10 40px 44px);border-top:8px solid #3fae2a;z-index:1;animation:scroll 3s linear infinite;background-size:44px 100%}
+@keyframes scroll{to{background-position:-44px 0}}
+#hero{position:absolute;bottom:56px;left:-60px;font-size:54px;z-index:2;transition:left 1s linear}
+#hero.jump{animation:jump .7s}
+@keyframes jump{50%{transform:translateY(-110px) rotate(10deg)}}
+#fb{margin-top:18px;font-weight:bold;font-size:18px;min-height:28px;text-shadow:2px 2px #000}
+.float{position:fixed;font-size:36px;font-weight:bold;color:var(--gold);text-shadow:2px 2px #000;pointer-events:none;animation:up 1s forwards;z-index:9}
+@keyframes up{to{transform:translateY(-90px);opacity:0}}
+.grid4{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:760px;margin:16px auto}
+@media(max-width:560px){.grid4{grid-template-columns:1fr}}
+.card{background:var(--card);border:4px solid var(--gold);border-radius:12px;padding:14px;text-align:left;animation:pop .6s backwards}
+.card:nth-child(2){animation-delay:.2s}.card:nth-child(3){animation-delay:.4s}.card:nth-child(4){animation-delay:.6s}
+.card b{font-size:22px;color:var(--gold)}
+.card i{font-size:42px;display:block;animation:bob 2s infinite}
+.steps{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:20px 0}
+.step{background:#e8f4ff;color:#3a1a00;border:4px solid #8a4a1a;border-radius:10px;padding:12px;width:230px;font-weight:bold;animation:pop .6s backwards}
+.step:nth-child(2){animation-delay:.3s}.step:nth-child(3){animation-delay:.6s}
+.fw{position:absolute;inset:0;pointer-events:none;z-index:1}
+#bg{position:absolute;inset:0;z-index:0;pointer-events:none;transition:filter .8s}
+.cave #bg{filter:brightness(.4) saturate(.7) hue-rotate(-15deg)}
+.lava #bg{filter:brightness(.5) sepia(1) saturate(3) hue-rotate(-30deg)}
+.hills,.bushes{position:absolute;left:0;right:0;animation:pan linear infinite}
+.hills{bottom:56px;height:170px;background:radial-gradient(ellipse at 50% 100%,#58c05a 0 58%,transparent 60%) 0 100%/var(--w) 170px repeat-x;animation-duration:50s}
+.hills.h2{height:110px;background:radial-gradient(ellipse at 50% 100%,#3fae4a 0 58%,transparent 60%) 0 100%/var(--w) 110px repeat-x;animation-duration:26s}
+.bushes{bottom:56px;height:34px;background:radial-gradient(ellipse at 50% 100%,#2e9a3a 0 60%,transparent 62%) 0 100%/var(--w) 34px repeat-x;animation-duration:10s}
+@keyframes pan{to{background-position-x:calc(var(--w)*-1)}}
+.pipe{position:absolute;bottom:56px;width:64px;background:linear-gradient(90deg,#2c9a2c,#7be37b 40%,#2c9a2c);border:4px solid #0f5a14;border-radius:4px}
+.pipe::before{content:"";position:absolute;top:-4px;left:-10px;right:-10px;height:26px;background:inherit;border:4px solid #0f5a14;border-radius:4px}
+.fq{position:absolute;width:42px;height:42px;background:#f5b800;border:4px solid #7a4a00;display:grid;place-items:center;font-weight:bold;font-size:24px;color:#fff;text-shadow:2px 2px #7a4a00;animation:bob 1.6s ease-in-out infinite}
+.fc{position:absolute;font-size:30px;animation:spin 1.2s linear infinite,bob 2s ease-in-out infinite}
+.star{position:absolute;font-size:30px;animation:tw 1.2s ease-in-out infinite}
+@keyframes tw{50%{transform:scale(1.4) rotate(20deg);filter:brightness(1.6)}}
+#mute{position:fixed;right:10px;top:calc(env(safe-area-inset-top,0px) + 56px);z-index:20;font-size:22px;background:#fff;border:3px solid #111;border-radius:50%;width:46px;height:46px;cursor:pointer}
+#hero svg{display:block;image-rendering:pixelated;animation:run .35s steps(2) infinite}
+@keyframes run{50%{transform:translateY(-5px)}}
+#hero.jump svg{animation:none}
+</style></head><body>
+<div id="game">
+<div id="hud"><span>[SCORE: <b id="sc">000000</b>]</span><span>[<span class="coin">🪙</span> SYILING: <b id="co">00</b>]</span><span>[DUNIA: <b id="wd">0-0</b>]</span><span>[⏱ MASA: <b id="tm">999</b>]</span></div>
+<div id="bg"><div class="hills" style="--w:420px"></div><div class="hills h2" style="--w:260px"></div><div class="bushes" style="--w:130px"></div><div class="pipe" style="left:3%;height:70px"></div><div class="pipe" style="right:3%;height:110px"></div><div class="fq" style="left:12%;top:130px">?</div><div class="fq" style="left:calc(12% + 46px);top:130px;animation-delay:.3s">?</div><div class="fq" style="right:14%;top:170px;animation-delay:.6s">?</div><div class="fc" style="left:30%;top:110px">🪙</div><div class="fc" style="left:68%;top:140px;animation-delay:.4s">🪙</div><div class="fc" style="left:50%;top:95px;animation-delay:.8s">🪙</div><div class="star" style="left:20%;top:60px">⭐</div><div class="star" style="right:18%;top:80px;animation-delay:.7s">⭐</div></div>
+<button id="mute" aria-label="Bunyi">🔊</button>
+<div id="main"></div>
+<div id="hero"></div>
+<div id="ground"></div>
+</div>
+<script>
+const Q=[
+["Di manakah terletaknya Muzium Negeri Pulau Pinang?",["Georgetown, Pulau Pinang","Alor Setar, Kedah","Ipoh, Perak","Kota Bharu, Kelantan"],0],
+["Apakah tujuan utama penubuhan muzium?",["Menjadi pusat membeli-belah","Menyimpan dan mempamerkan bahan sejarah","Menjadi pusat hiburan","Menjadi tempat penginapan"],1],
+["Apakah jenis bahan yang boleh ditemui di muzium?",["Peralatan moden sahaja","Makanan segera","Artifak dan bahan bersejarah","Barangan permainan sahaja"],2],
+["Mengapakah Muzium Negeri Pulau Pinang penting kepada masyarakat?",["Menyediakan kemudahan sukan","Menjadi tempat menjalankan perniagaan","Menjadi pusat pengangkutan","Memelihara warisan sejarah dan budaya negeri"],3],
+["Apakah yang dimaksudkan dengan artifak sejarah?",["Objek tinggalan manusia yang mempunyai nilai sejarah","Barangan baharu yang dijual di kedai","Bangunan yang baru dibina","Peralatan elektronik terkini"],0],
+["Apakah tindakan yang betul ketika melawat muzium?",["Menyentuh semua artifak","Mematuhi peraturan dan menjaga kebersihan","Menconteng dinding pameran","Mengambil artifak sebagai cenderamata"],1],
+["Mengapakah artifak lama perlu dipelihara?",["Untuk dijual kepada pelancong","Untuk menggantikan semua bahan moden","Untuk memastikan warisan sejarah kekal bagi generasi akan datang","Untuk dijadikan bahan permainan"],2],
+["Apakah peranan muzium dalam bidang pendidikan?",["Menggantikan semua institusi pendidikan","Mengajar kemahiran memasak sahaja","Menyediakan tempat untuk berniaga","Memberikan pengetahuan tentang sejarah dan kebudayaan"],3],
+["Apakah maksud pemuliharaan bangunan bersejarah?",["Mengekalkan dan membaik pulih bangunan supaya warisannya terpelihara","Merobohkan bangunan lama","Menukar bangunan menjadi pusat hiburan","Mengabaikan kerosakan bangunan"],0],
+["Bagaimanakah teknologi laman web dapat membantu memperkenalkan Muzium Negeri Pulau Pinang?",["Mengurangkan pengetahuan tentang sejarah","Membolehkan orang ramai mendapatkan maklumat muzium secara dalam talian","Menghapuskan semua artifak lama","Menghalang pelawat daripada mengunjungi muzium"],1]
+];
+const W=["1-1","1-2","1-3","2-1","2-2","2-3","3-1","3-2","3-3","3-BOS"];
+const $=id=>document.getElementById(id),G=$('game'),M=$('main'),H=$('hero');
+let i=0,score=0,coins=0,time=999,timer;
+for(let k=0;k<5;k++){const c=document.createElement('div');c.className='cloud';c.textContent='☁️';c.style.top=(60+k*90)+'px';c.style.animationDuration=(25+k*9)+'s';c.style.animationDelay=(-k*7)+'s';G.appendChild(c)}
+function hud(){$('sc').textContent=String(score).padStart(6,'0');$('co').textContent=String(coins).padStart(2,'0');$('tm').textContent=time;$('wd').textContent=i<10?W[i]:'3-BOS'}
+function theme(){G.className=i>=6?'lava':i>=3?'cave':''}
+function title(){clearInterval(timer);i=0;score=0;coins=0;time=999;theme();hud();H.style.left='-60px';
+M.innerHTML=`<div class="screen"><h1>SUPER<br>MUZIUM BROS</h1><div class="sub">Misi Pulau Pinang</div><div class="museum">🏛️</div><div><button class="btn" id="go">TEKAN START UNTUK MULA</button></div><p style="font-size:13px;text-shadow:1px 1px #000">2024 JABATAN MUZIUM NEGERI PULAU PINANG</p></div>`;
+$('go').onclick=()=>{music();how()}}
+function how(){M.innerHTML=`<div class="screen"><h1 style="font-size:clamp(28px,7vw,52px)">CARA BERMAIN</h1><div class="steps"><div class="step">LANGKAH 1:<br><br>BACA SOALAN DENGAN TELITI.</div><div class="step">LANGKAH 2:<br><br>PILIH BLOK [A], [B], [C], ATAU [D] YANG MENGANDUNGI JAWAPAN PALING TEPAT.</div><div class="step">LANGKAH 3:<br><br>KUMPUL SYILING UNTUK SETIAP JAWAPAN BETUL!<br><b style="color:#c00">AWAS</b> MUSUH JIKA JAWAPAN SALAH!</div></div><button class="btn" id="go">MULA MISI ▶</button></div>`;
+$('go').onclick=()=>{timer=setInterval(()=>{time=Math.max(0,time-1);hud()},1000);ask()}}
+function ask(){theme();hud();const [q,o,a]=Q[i];H.style.left=(8+i*7)+'%';
+M.innerHTML=`<div class="screen"><div class="q">${i+1}. ${q}</div><div class="opts">${o.map((t,k)=>`<button class="opt" data-k="${k}"><span class="blk">?</span><span>[${'ABCD'[k]}] ${t}</span></button>`).join('')}</div><div id="fb"></div></div>`;
+M.querySelectorAll('.opt').forEach(b=>b.onclick=()=>pick(+b.dataset.k,a))}
+function pop(txt,e){const f=document.createElement('div');f.className='float';f.textContent=txt;const r=e.getBoundingClientRect();f.style.left=r.left+r.width/2-30+'px';f.style.top=r.top+'px';document.body.appendChild(f);setTimeout(()=>f.remove(),1000)}
+function pick(k,a){const bs=[...M.querySelectorAll('.opt')];bs.forEach(b=>b.disabled=true);
+const ok=k===a;bs[a].classList.add('ok');bs[a].querySelector('.blk').textContent='🪙';
+if(ok){score+=100;coins++;H.classList.add('jump');setTimeout(()=>H.classList.remove('jump'),700);pop('+100',bs[a]);sfx('coin');$('fb').textContent='✅ Betul! Anda dapat 1 syiling!'}
+else{bs[k].classList.add('no');sfx('bad');bs[k].querySelector('.blk').textContent='👾';time=Math.max(0,time-30);$('fb').textContent='👾 Awas musuh! Jawapan betul ialah ['+'ABCD'[a]+']'}
+hud();setTimeout(()=>{i++;i<10?ask():end()},1700)}
+function end(){clearInterval(timer);i=10;hud();G.className='cave';
+const bonus=coins===10?' 🏆 SEMPURNA!':'';
+M.innerHTML=`<div class="screen"><h2>[STAGE CLEAR!] [SCORE: ${score}]${bonus}</h2><h1 style="font-size:clamp(22px,5vw,38px);color:var(--gold);text-shadow:2px 2px #000">Status Inventori: 4 Kuasa Muzium</h1><div class="grid4">
+<div class="card"><i>🗺️</i><b>Identiti</b><p>Siapa kita dan di mana asalnya.</p><small>Lokasi, Tujuan, Kepentingan</small></div>
+<div class="card"><i>💎</i><b>Koleksi</b><p>Harta berharga peninggalan manusia.</p><small>Jenis bahan, Definisi artifak, Pemeliharaan fizikal</small></div>
+<div class="card"><i>🛡️</i><b>Etika</b><p>Cara kita menjaga dan menghormati warisan.</p><small>Peraturan melawat, Pembaikpulihan bangunan</small></div>
+<div class="card"><i>💻</i><b>Inovasi</b><p>Pendidikan tanpa sempadan masa kini.</p><small>Peranan pendidikan, Akses teknologi/web</small></div></div>
+<button class="btn" id="go">SETERUSNYA ▶</button></div>`;
+$('go').onclick=win}
+function win(){G.className='cave';H.style.left='80%';
+M.innerHTML=`<div class="screen"><canvas class="fw" id="cv"></canvas><h1 style="font-size:clamp(28px,7vw,56px);color:var(--gold);position:relative">TAHNIAH! ANDA KINI WIRA WARISAN!</h1><p style="position:relative;font-size:20px;font-weight:bold;text-shadow:2px 2px #000">Sejarah kita adalah nyawa bangsa.<br>Terus pelihara dan terokai.</p><div class="museum" style="position:relative">🏛️</div><button class="btn" id="go" style="position:relative">INSERT COIN TO PLAY AGAIN</button></div>`;
+$('go').onclick=title;fire();sfx('win')}
+function fire(){const c=$('cv');if(!c)return;const x=c.getContext('2d');c.width=c.offsetWidth;c.height=c.offsetHeight;let p=[];
+(function loop(){if(!$('cv'))return;x.fillStyle='rgba(11,16,48,.2)';x.fillRect(0,0,c.width,c.height);
+if(Math.random()<.07){const cx=Math.random()*c.width,cy=Math.random()*c.height*.5,h=Math.random()*360;for(let n=0;n<40;n++){const a=Math.PI*2*n/40,s=1+Math.random()*3;p.push({x:cx,y:cy,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:60,h})}}
+p=p.filter(q=>q.l>0);p.forEach(q=>{q.x+=q.vx;q.y+=q.vy;q.vy+=.03;q.l--;x.fillStyle=`hsl(${q.h},100%,60%)`;x.fillRect(q.x,q.y,3,3)});requestAnimationFrame(loop)})()}
+// Wira Warisan: pixel hero (original design)
+(function(){const m=['.....gg.....','...gggggg...','..ggyggggg..','..ssssssss..','..sesssese..','..ssssssss..','...ssmmss...','..bbbbbbbb..','.sbbbyybbbs.','.sbbbbbbbbs.','..rrrrrrrr..','..rrrrrrrr..','..pp....pp..','..pp....pp..','.oooo..oooo.'];
+const c={g:'#8b5a2b',y:'#ffd23f',s:'#f3b98a',e:'#222',m:'#6b3a1a',b:'#1fa3a3',r:'#d32f2f',p:'#2a3a7a',o:'#5a2a10'};let r='';m.forEach((row,y)=>[...row].forEach((ch,x)=>{if(c[ch])r+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${c[ch]}"/>`}));
+H.innerHTML=`<svg width="60" height="75" viewBox="0 0 12 15">${r}</svg>`})();
+// Chiptune (original tune, WebAudio)
+let AC,on=true,step=0,nextT=0,tick;
+const N=n=>440*Math.pow(2,(n-69)/12);
+const A1=[72,0,76,79,0,76,72,0,74,0,77,81,0,77,74,0,76,0,79,83,0,79,76,0,79,77,76,74,72,0,0,0];
+const B1=[69,0,72,76,0,72,69,0,71,0,74,77,0,74,71,0,68,0,71,76,0,71,68,0,69,71,72,71,69,0,0,0];
+const BA=[48,48,55,55,53,53,59,59],BB=[45,45,52,52,41,41,40,40];
+function tone(t,f,d,type,v){if(!f)return;const o=AC.createOscillator(),g=AC.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g).connect(AC.destination);o.start(t);o.stop(t+d)}
+function music(){if(AC)return;AC=new (window.AudioContext||window.webkitAudioContext)();nextT=AC.currentTime+.1;
+tick=setInterval(()=>{while(nextT<AC.currentTime+.3){const lava=G.className==='lava',sp=lava?.1:.13,mel=lava?B1:A1,bas=lava?BB:BA;if(on){const s=step%32;tone(nextT,N(mel[s]),sp*1.6,'square',.07);if(s%4===0)tone(nextT,N(bas[(s/4)%8]-12),sp*3,'triangle',.16);if(s%2===1)tone(nextT,N(100),.03,'square',.012);if(s%8===4)tone(nextT,90,.1,'sawtooth',.05)}nextT+=sp;step++}},80)}
+function sfx(k){if(!AC||!on)return;const t=AC.currentTime;if(k==='coin'){tone(t,N(83),.08,'square',.12);tone(t+.08,N(88),.35,'square',.12)}else if(k==='bad'){[0,1,2,3].forEach(n=>tone(t+n*.1,N(60-n*3),.14,'sawtooth',.12))}else{[72,76,79,84,79,84,88].forEach((n,j)=>tone(t+j*.12,N(n),.3,'square',.1))}}
+$('mute').onclick=()=>{on=!on;$('mute').textContent=on?'🔊':'🔇'};
+title();
+</script></body></html>
